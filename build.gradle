@@ -1,0 +1,105 @@
+version = '0.1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("at.bxm.gradleplugins:gradle-svntools-plugin:latest.integration")
+    }
+}
+
+['java', 'distribution'].each {
+    apply plugin: it
+}
+
+sourceCompatibility = '1.7'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    doFirst {
+        options.fork = true
+        options.bootClasspath = "${System.properties['java.home']}/lib/rt.jar"
+     	   options.bootClasspath += "$File.pathSeparator${System.properties['java.home']}/jre/lib/jsse.jar"
+    }
+}
+
+// Disable tests on build
+check.dependsOn.remove(test)
+
+task testJar(type: Jar, dependsOn: testClasses) {
+    classifier "tests"
+    baseName = "test-${project.archivesBaseName}"
+    from sourceSets.test.output
+}
+
+configurations {
+    tests
+}
+
+artifacts {
+    tests testJar
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("at.bxm.gradleplugins:gradle-svntools-plugin:latest.integration")
+    }
+}
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'cz.minecart.updater.Updater'
+    ext.appArgs = '-dev'
+}
+
+def configureExec(task) {
+    task.main = mainClass
+    task.classpath = sourceSets.main.runtimeClasspath
+    if (hasProperty('appArgs')) {
+        task.args appArgs
+    }
+}
+
+task run(type: JavaExec) {
+    task -> configureExec(task)
+}
+
+task debug(type: JavaExec) {
+    task -> configureExec(task)
+    debug = true
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    flatDir {
+        dirs "../../lib"
+    }
+}
+
+dependencies {
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': mainClass
+        )
+    }
+}
+
+distributions {
+    main {
+        contents {
+            
+        }
+    }
+}
