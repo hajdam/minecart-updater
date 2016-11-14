@@ -89,6 +89,7 @@ dependencies {
 }
 
 jar {
+    from configurations.compile.findAll { it.name == 'json-simple-1.1.1.jar' }.collect { it.isDirectory() ? it : zipTree(it) }
     manifest {
         attributes(
             'Main-Class': mainClass

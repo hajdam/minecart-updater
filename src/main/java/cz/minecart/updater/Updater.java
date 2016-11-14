@@ -1,5 +1,6 @@
 package cz.minecart.updater;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -22,6 +23,8 @@ import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -56,6 +59,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private VersionNumbers updateVersion;
     private Set<String> currentFiles = null;
     private final Set<String> modsFiles = new HashSet<>();
+    private AnimatedBanner banner;
 
     public Updater() {
         initComponents();
@@ -101,7 +105,20 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             }
         });
 
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        banner = new AnimatedBanner();
+        headerPanel.add(banner, BorderLayout.CENTER);
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (isVisible()) {
+                    banner.animate();
+                }
+            }
+        }, 0, 70);
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     /**
@@ -115,10 +132,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
         runCommandCheckBox = new javax.swing.JCheckBox();
         headerPanel = new javax.swing.JPanel();
-        overlayPanel = new javax.swing.JPanel();
-        versionLabel = new javax.swing.JLabel();
-        backgroundPanel = new javax.swing.JPanel();
-        header = new javax.swing.JLabel();
         tabbedPane = new javax.swing.JTabbedPane();
         newsScrollPane = new javax.swing.JScrollPane();
         newsTextPane = new javax.swing.JTextPane();
@@ -159,43 +172,10 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         setIconImage(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icon.png")).getImage());
         setSize(new java.awt.Dimension(781, 384));
 
-        headerPanel.setLayout(new javax.swing.OverlayLayout(headerPanel));
-
-        overlayPanel.setOpaque(false);
-
-        versionLabel.setForeground(new java.awt.Color(255, 255, 255));
-        versionLabel.setText("Version");
-
-        javax.swing.GroupLayout overlayPanelLayout = new javax.swing.GroupLayout(overlayPanel);
-        overlayPanel.setLayout(overlayPanelLayout);
-        overlayPanelLayout.setHorizontalGroup(
-            overlayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, overlayPanelLayout.createSequentialGroup()
-                .addContainerGap(736, Short.MAX_VALUE)
-                .addComponent(versionLabel)
-                .addContainerGap())
-        );
-        overlayPanelLayout.setVerticalGroup(
-            overlayPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, overlayPanelLayout.createSequentialGroup()
-                .addContainerGap(150, Short.MAX_VALUE)
-                .addComponent(versionLabel)
-                .addContainerGap())
-        );
-
-        headerPanel.add(overlayPanel);
-
-        backgroundPanel.setLayout(new java.awt.BorderLayout());
-
-        header.setBackground(new java.awt.Color(0, 0, 0));
-        header.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        header.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/header.png"))); // NOI18N
-        header.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        header.setOpaque(true);
-        backgroundPanel.add(header, java.awt.BorderLayout.CENTER);
-
-        headerPanel.add(backgroundPanel);
-
+        headerPanel.setBackground(new java.awt.Color(0, 0, 0));
+        headerPanel.setMinimumSize(new java.awt.Dimension(0, 170));
+        headerPanel.setPreferredSize(new java.awt.Dimension(0, 170));
+        headerPanel.setLayout(new java.awt.BorderLayout());
         getContentPane().add(headerPanel, java.awt.BorderLayout.NORTH);
 
         newsTextPane.setEditable(false);
@@ -602,7 +582,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel backgroundPanel;
     private javax.swing.JLabel checkingIconLabel;
     private javax.swing.JPanel checkingPanel;
     private javax.swing.JPanel controlPanel;
@@ -612,7 +591,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private javax.swing.JCheckBox gamePathCheckBox;
     private javax.swing.JLabel gamePathLabel;
     private javax.swing.JTextField gamePathTextField;
-    private javax.swing.JLabel header;
     private javax.swing.JPanel headerPanel;
     private javax.swing.JButton newAppDownloadButton;
     private javax.swing.JLabel newAppIconLabel;
@@ -622,7 +600,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private javax.swing.JPanel optionsInnerPanel;
     private javax.swing.JPanel optionsPanel;
     private javax.swing.JScrollPane optionsScrollPane;
-    private javax.swing.JPanel overlayPanel;
     private javax.swing.JButton playButton;
     private javax.swing.JLabel playIconLabel;
     private javax.swing.JPanel playPanel;
@@ -638,7 +615,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private javax.swing.JLabel updateIconLabel;
     private javax.swing.JPanel updatePanel;
     private javax.swing.JProgressBar updateProgressBar;
-    private javax.swing.JLabel versionLabel;
     // End of variables declaration//GEN-END:variables
 
     private void performUpdate() {
@@ -652,7 +628,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                     filesUpdateUrl = new URI(resourceBundle.getString("update_files_url")).toURL();
                     appDownloadUrl = new URI(resourceBundle.getString("download_laucher_url")).toURL();
                     updateDownloadUrl = new URI(resourceBundle.getString("update_download_url")).toURL();
-                    versionLabel.setText("Version " + resourceBundle.getString("Application.version"));
+                    banner.setVersion("Version " + resourceBundle.getString("Application.version"));
                 } catch (URISyntaxException | MalformedURLException ex) {
                     Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
                 }
