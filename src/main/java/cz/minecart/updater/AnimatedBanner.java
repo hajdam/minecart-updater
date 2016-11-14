@@ -7,7 +7,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
@@ -23,7 +22,6 @@ public class AnimatedBanner extends javax.swing.JPanel {
     private final ImageIcon bgImage = new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/header_bg.jpg"));
     private final ImageIcon logoImage = new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/minecart-overlay.png"));
 
-    private final Point bgPosition;
     private BufferedImage animationBuffer;
 
     private final ImageObserver observer = new ImageObserver() {
@@ -51,7 +49,6 @@ public class AnimatedBanner extends javax.swing.JPanel {
         bgWidth = bgImage.getIconWidth();
         bgHeight = bgImage.getIconHeight();
 
-        bgPosition = new Point(0, 40);
         initComponents();
         init();
     }
@@ -105,15 +102,15 @@ public class AnimatedBanner extends javax.swing.JPanel {
                 g.fillRect(0, 0, width, height);
                 g.drawImage(bgImage.getImage(), startPoint, -bgY, observer);
                 g.setColor(Color.WHITE);
-                
+
                 if (versionWidth == 0) {
                     FontMetrics metrics = g.getFontMetrics(g.getFont());
                     versionWidth = metrics.stringWidth(versionText);
                 }
-                
+
                 ((Graphics2D) g).setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+                        RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
                 g.drawString(versionText, startPoint + bgWidth - versionWidth - 15, 160);
                 if (logoFont == null) {
                     logoFont = new Font("Dialog", 0, 44);

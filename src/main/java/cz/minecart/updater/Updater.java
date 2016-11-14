@@ -7,6 +7,7 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -21,13 +22,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.event.HyperlinkEvent;
@@ -44,15 +45,23 @@ import org.json.simple.parser.ParseException;
  */
 public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
-    private static final String PREFERENCES_CURRENT_FILE = "currentFile";
+    private static final String GAME_PATH_PROPERTY = "gamePath";
+    private static final String GAME_PATH_AUTO_PROPERTY = "gamePathAuto";
+    private static final String PROFILE_PATH_PROPERTY = "profilePath";
+    private static final String PROFILE_PATH_AUTO_PROPERTY = "profilePathAuto";
+    private static final String RUN_COMMAND_PROPERTY = "runCommand";
+    private static final String RUN_COMMAND_AUTO_PROPERTY = "runCommandAuto";
+    private static final String MOD_RECORD_PREFIX = "mod_";
 
     private final ResourceBundle resourceBundle = ResourceBundle.getBundle("cz/minecart/updater/resources/Updater");
-    private final Preferences preferences = Preferences.userNodeForPackage(Updater.class);
+    private final Properties config = new Properties();
+    private File configFile;
 
     private OsType osType = OsType.LINUX;
     private URL newsUrl;
     private URL checkUpdateUrl;
     private URL appDownloadUrl;
+    private URL websiteUrl;
     private URL filesUpdateUrl;
     private URL updateDownloadUrl;
 
@@ -68,7 +77,18 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
     private void init() {
         newsTextPane.addHyperlinkListener(this);
-        preferences.putBoolean("updater", true);
+        configFile = new File("./minecart-updater.cfg");
+        if (configFile.exists()) {
+            try {
+                FileInputStream configInput = new FileInputStream(configFile);
+                config.load(configInput);
+                configInput.close();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         // Detect operating system type
         String osName = System.getProperty("os.name").toLowerCase();
@@ -78,30 +98,31 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             osType = OsType.MAC;
         }
 
-        String gamePath = preferences.get("gamePath", "");
-        boolean gamePathAuto = preferences.getBoolean("gamePathAuto", true);
+        String gamePath = config.getProperty(GAME_PATH_PROPERTY, "");
+        boolean gamePathAuto = Boolean.valueOf(config.getProperty(GAME_PATH_AUTO_PROPERTY, Boolean.TRUE.toString()));
         gamePathCheckBox.setSelected(gamePathAuto);
-        gamePathTextField.setEnabled(!gamePathAuto);
-        gamePathButton.setEnabled(!gamePathAuto);
+        updateGamePathVisibility();
         if (gamePathAuto && (gamePath == null || gamePath.isEmpty())) {
             gamePath = getDefaultGamePath();
         }
         gamePathTextField.setText(gamePath);
 
-        String profilePath = preferences.get("profilePath", "");
+        String profilePath = config.getProperty(PROFILE_PATH_PROPERTY, "");
         profilePathTextField.setText(profilePath);
-        boolean profilePathAuto = preferences.getBoolean("profilePathAuto", true);
+        boolean profilePathAuto = Boolean.valueOf(config.getProperty(PROFILE_PATH_AUTO_PROPERTY, Boolean.TRUE.toString()));
         profilePathCheckBox.setSelected(profilePathAuto);
+        updateProfilePathVisibility();
 
-        String runCommand = preferences.get("runCommand", "");
+        String runCommand = config.getProperty(RUN_COMMAND_PROPERTY, "");
         runCommandTextField.setText(runCommand);
-        boolean runCommandAuto = preferences.getBoolean("runCommandAuto", true);
+        boolean runCommandAuto = Boolean.valueOf(config.getProperty(RUN_COMMAND_AUTO_PROPERTY, Boolean.TRUE.toString()));
 
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
-                save();
-                super.windowClosed(e);
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                dispose();
+                System.exit(0);
             }
         });
 
@@ -118,7 +139,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             }
         }, 0, 70);
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     }
 
     /**
@@ -173,8 +194,14 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         setSize(new java.awt.Dimension(781, 384));
 
         headerPanel.setBackground(new java.awt.Color(0, 0, 0));
+        headerPanel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         headerPanel.setMinimumSize(new java.awt.Dimension(0, 170));
         headerPanel.setPreferredSize(new java.awt.Dimension(0, 170));
+        headerPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                headerPanelMouseClicked(evt);
+            }
+        });
         headerPanel.setLayout(new java.awt.BorderLayout());
         getContentPane().add(headerPanel, java.awt.BorderLayout.NORTH);
 
@@ -358,7 +385,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         controlPanel.add(checkingPanel, "checking");
 
         playButton.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        playButton.setText("HRÁT >>");
+        playButton.setText("Zavřít");
         playButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playButtonActionPerformed(evt);
@@ -376,7 +403,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, playPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(playIconLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 366, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 407, Short.MAX_VALUE)
                 .addComponent(playButton)
                 .addContainerGap())
         );
@@ -471,6 +498,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        save();
         System.exit(0);
     }//GEN-LAST:event_playButtonActionPerformed
 
@@ -494,8 +522,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     }//GEN-LAST:event_gamePathButtonActionPerformed
 
     private void gamePathCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gamePathCheckBoxActionPerformed
-        gamePathTextField.setEnabled(!gamePathCheckBox.isSelected());
-        gamePathButton.setEnabled(!gamePathCheckBox.isSelected());
+        updateGamePathVisibility();
     }//GEN-LAST:event_gamePathCheckBoxActionPerformed
 
     private void profilePathButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profilePathButtonActionPerformed
@@ -515,9 +542,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     }//GEN-LAST:event_profilePathButtonActionPerformed
 
     private void profilePathCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profilePathCheckBoxActionPerformed
-        profilePathTextField.setEnabled(!profilePathCheckBox.isSelected());
-        profilePathButton.setEnabled(!profilePathCheckBox.isSelected());
-
+        updateProfilePathVisibility();
     }//GEN-LAST:event_profilePathCheckBoxActionPerformed
 
     private void runCommandButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runCommandButtonActionPerformed
@@ -545,6 +570,10 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             runCommandTextField.setText(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_runCommandButtonActionPerformed
+
+    private void headerPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_headerPanelMouseClicked
+        BareBonesBrowserLaunch.openDesktopURL(websiteUrl);
+    }//GEN-LAST:event_headerPanelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -627,6 +656,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                     checkUpdateUrl = new URI(resourceBundle.getString("update_url")).toURL();
                     filesUpdateUrl = new URI(resourceBundle.getString("update_files_url")).toURL();
                     appDownloadUrl = new URI(resourceBundle.getString("download_laucher_url")).toURL();
+                    websiteUrl = new URI(resourceBundle.getString("website_url")).toURL();
                     updateDownloadUrl = new URI(resourceBundle.getString("update_download_url")).toURL();
                     banner.setVersion("Version " + resourceBundle.getString("Application.version"));
                 } catch (URISyntaxException | MalformedURLException ex) {
@@ -643,6 +673,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                         ((CardLayout) controlPanel.getLayout()).show(controlPanel, "newApp");
                         break;
                     }
+                    case NOT_FOUND:
                     case CONNECTION_ISSUE: {
                         connectionIssues();
                         break;
@@ -650,13 +681,10 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                     case NO_TARGET_DIRECTORY: {
                         playIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png")));
                         playIconLabel.setText("Složka minecraft profilu je neplatná. Nastavte ji ručně.");
-                        if (runCommandTextField.getText().isEmpty()) {
-                            playButton.setText("Zavřít");
-                        }
-                        ((CardLayout) controlPanel.getLayout()).show(controlPanel, "play");
+                        checkingEnded();
                         break;
                     }
-                    default: {
+                    case NO_UPDATE_AVAILABLE: {
                         UpdatePlan updatePlan = checkForModsUpdate();
                         switch (updatePlan.resultType) {
                             case UPDATE_FOUND: {
@@ -669,28 +697,42 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                                     }
                                     case UPDATE_OK: {
                                         playIconLabel.setText("Nastavení bylo aktualizováno.");
-                                        if (runCommandTextField.getText().isEmpty()) {
-                                            playButton.setText("Zavřít");
-                                        }
-                                        ((CardLayout) controlPanel.getLayout()).show(controlPanel, "play");
+                                        checkingEnded();
                                         break;
                                     }
                                 }
                                 break;
                             }
+                            case NOT_FOUND:
+                            case NO_CONNECTION:
                             case CONNECTION_ISSUE: {
                                 connectionIssues();
                                 break;
                             }
+                            case NO_UPDATE_AVAILABLE: {
+                                checkingEnded();
+                                break;
+                            }
+                            case NO_TARGET_DIRECTORY: {
+                                playIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png")));
+                                playIconLabel.setText("Nepodařilo se najít složku Minecraft profilu");
+                                checkingEnded();
+                                break;
+                            }
                             default: {
-                                if (runCommandTextField.getText().isEmpty()) {
-                                    playButton.setText("Zavřít");
-                                }
-                                ((CardLayout) controlPanel.getLayout()).show(controlPanel, "play");
+                                playIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png")));
+                                playIconLabel.setText("Nepodařilo se zkontrolovat aktualizaci");
+                                checkingEnded();
                                 break;
                             }
                         }
 
+                        break;
+                    }
+
+                    default: {
+                        errorIconLabel.setText("Došlo k neznámé chybě");
+                        ((CardLayout) controlPanel.getLayout()).show(controlPanel, "error");
                         break;
                     }
                 }
@@ -698,6 +740,13 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         });
 
         updateThread.start();
+    }
+
+    private void checkingEnded() {
+        if (!runCommandTextField.getText().isEmpty()) {
+            playButton.setText("Hrát >>");
+        }
+        ((CardLayout) controlPanel.getLayout()).show(controlPanel, "play");
     }
 
     /**
@@ -782,10 +831,10 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 }
             }
 
-            // Compare files
+            // Compare list of mods
             Set<String> downloadMods = new HashSet<>();
             Set<String> deleteMods = new HashSet<>();
-            currentFiles = getCurrentFiles();
+            currentFiles = getModRecords();
 
             String profilePath = getProfilePath();
             if (profilePath == null) {
@@ -793,6 +842,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             }
 
             String profileModsDir = profilePath + File.separator + "mods";
+            System.out.println("ModsDir: " + profileModsDir);
             if (!new File(profileModsDir).exists()) {
                 return new UpdatePlan(CheckUpdatesResult.NO_TARGET_DIRECTORY);
             }
@@ -872,14 +922,14 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         }
 
         // Save list of files for next update
-        saveCurrentFiles(modsFiles);
+        saveModRecords(modsFiles);
         return ModsUpdateResult.UPDATE_OK;
     }
 
     private void connectionIssues() {
         playIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png")));
         playIconLabel.setText("Došlo k problému s připojením");
-        ((CardLayout) controlPanel.getLayout()).show(controlPanel, "play");
+        checkingEnded();
     }
 
     public VersionNumbers getVersionNumbers() {
@@ -889,28 +939,28 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         return versionNumbers;
     }
 
-    public Set<String> getCurrentFiles() {
+    public Set<String> getModRecords() {
         Set<String> files = new HashSet<>();
         int index = 0;
-        String file;
+        String mod;
         do {
-            file = preferences.get(PREFERENCES_CURRENT_FILE + index, null);
-            if (file != null) {
-                files.add(file);
+            mod = config.getProperty(MOD_RECORD_PREFIX + index, null);
+            if (mod != null && !mod.isEmpty()) {
+                files.add(mod);
             }
             index++;
-        } while (file != null);
+        } while (mod != null);
 
         return files;
     }
 
-    public void saveCurrentFiles(Set<String> files) {
+    public void saveModRecords(Set<String> mods) {
         int index = 0;
-        for (String file : files) {
-            preferences.put(PREFERENCES_CURRENT_FILE + index, file);
+        for (String mod : mods) {
+            config.setProperty(MOD_RECORD_PREFIX + index, mod);
             index++;
         }
-        preferences.remove(PREFERENCES_CURRENT_FILE + index);
+        config.setProperty(MOD_RECORD_PREFIX + index, "");
     }
 
     @Override
@@ -920,14 +970,25 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     }
 
     private void save() {
-        preferences.put("gamePath", gamePathTextField.getText());
-        preferences.putBoolean("gamePathAuto", gamePathCheckBox.isSelected());
+        config.setProperty(GAME_PATH_PROPERTY, gamePathTextField.getText());
+        config.setProperty(GAME_PATH_AUTO_PROPERTY, Boolean.toString(gamePathCheckBox.isSelected()));
 
-        preferences.put("profilePath", profilePathTextField.getText());
-        preferences.putBoolean("profilePathAuto", profilePathCheckBox.isSelected());
+        config.setProperty(PROFILE_PATH_PROPERTY, profilePathTextField.getText());
+        config.setProperty(PROFILE_PATH_AUTO_PROPERTY, Boolean.toString(profilePathCheckBox.isSelected()));
 
-        preferences.put("runCommand", runCommandTextField.getText());
-        preferences.putBoolean("runCommandAuto", runCommandCheckBox.isSelected());
+        config.setProperty(RUN_COMMAND_PROPERTY, runCommandTextField.getText());
+        config.setProperty(RUN_COMMAND_AUTO_PROPERTY, Boolean.toString(runCommandCheckBox.isSelected()));
+
+        FileOutputStream configOutput;
+        try {
+            configOutput = new FileOutputStream(configFile);
+            config.store(configOutput, "Minecart Updater");
+            configOutput.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private String getDefaultGamePath() {
@@ -936,7 +997,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 return System.getProperty("user.home") + File.separator + ".minecraft";
             }
             case WINDOWS: {
-                return System.getenv("LOCALAPPDATA") + File.separator + ".minecraft";
+                return System.getenv("APPDATA") + File.separator + ".minecraft";
             }
             case MAC: {
                 return System.getProperty("user.home") + "Library/Application Support/minecraft";
@@ -962,7 +1023,11 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 JSONObject profiles = (JSONObject) profileFile.get("profiles");
                 JSONObject minecartProfile = (JSONObject) profiles.get("minecart.cz");
                 String minecartProfileDir = (String) minecartProfile.get("gameDir");
-                profilePath = minecartProfileDir;
+                if (minecartProfileDir == null || minecartProfileDir.isEmpty()) {
+                    profilePath = gamePath;
+                } else {
+                    profilePath = minecartProfileDir;
+                }
             } catch (ParseException | FileNotFoundException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -973,6 +1038,16 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         }
 
         return profilePath;
+    }
+
+    private void updateGamePathVisibility() {
+        gamePathTextField.setEnabled(!gamePathCheckBox.isSelected());
+        gamePathButton.setEnabled(!gamePathCheckBox.isSelected());
+    }
+
+    private void updateProfilePathVisibility() {
+        profilePathTextField.setEnabled(!profilePathCheckBox.isSelected());
+        profilePathButton.setEnabled(!profilePathCheckBox.isSelected());
     }
 
     private static class UpdatePlan {
