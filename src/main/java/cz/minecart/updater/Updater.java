@@ -658,7 +658,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                     appDownloadUrl = new URI(resourceBundle.getString("download_laucher_url")).toURL();
                     websiteUrl = new URI(resourceBundle.getString("website_url")).toURL();
                     updateDownloadUrl = new URI(resourceBundle.getString("update_download_url")).toURL();
-                    banner.setVersion("Version " + resourceBundle.getString("Application.version"));
+                    banner.setVersion("Verze aktualizátoru: " + resourceBundle.getString("Application.version"));
                 } catch (URISyntaxException | MalformedURLException ex) {
                     Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -878,8 +878,15 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private ModsUpdateResult performModsUpdate(UpdatePlan updatePlan) {
         String profilePath = getProfilePath();
         String profileModsDir = profilePath + File.separator + "mods";
+        int downloadModsSize = updatePlan.downloadMods.size();
+        if (downloadModsSize > 0) {
+            updateProgressBar.setIndeterminate(false);
+            updateProgressBar.setValue(0);
+            updateProgressBar.setMaximum(100);
+        }
 
         // Add new files not present in previous set
+        int index = 0;
         for (String mod : updatePlan.downloadMods) {
             String modsUrlPath;
             try {
@@ -911,9 +918,13 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
                 return ModsUpdateResult.DOWNLOAD_ERROR;
             }
+            index++;
+            updateProgressBar.setValue((index * 100) / downloadModsSize);
+            updateProgressBar.repaint();
         }
 
         // Delete all files not present in new mods list
+        updateProgressBar.setIndeterminate(true);
         for (String mod : updatePlan.deleteMods) {
             File targetFile = new File(profileModsDir + File.separator + mod);
             if (targetFile.exists()) {
