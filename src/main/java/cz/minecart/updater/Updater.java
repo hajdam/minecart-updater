@@ -63,6 +63,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private URL appDownloadUrl;
     private URL websiteUrl;
     private URL filesUpdateUrl;
+    private URL forgeUpdateUrl;
     private URL updateDownloadUrl;
 
     private VersionNumbers updateVersion;
@@ -80,9 +81,9 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         configFile = new File("./minecart-updater.cfg");
         if (configFile.exists()) {
             try {
-                FileInputStream configInput = new FileInputStream(configFile);
-                config.load(configInput);
-                configInput.close();
+                try (FileInputStream configInput = new FileInputStream(configFile)) {
+                    config.load(configInput);
+                }
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -184,6 +185,8 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         newAppPanel = new javax.swing.JPanel();
         newAppDownloadButton = new javax.swing.JButton();
         newAppIconLabel = new javax.swing.JLabel();
+        forgePanel = new javax.swing.JPanel();
+        forgeIconLabel = new javax.swing.JLabel();
 
         runCommandCheckBox.setText("Detekovat příkaz automaticky");
         runCommandCheckBox.setEnabled(false);
@@ -483,6 +486,29 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
         controlPanel.add(newAppPanel, "newApp");
 
+        forgeIconLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        forgeIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icons/png/48x48/actions/upgrade_misc.png"))); // NOI18N
+        forgeIconLabel.setText("Aktualizuje se forge...");
+
+        javax.swing.GroupLayout forgePanelLayout = new javax.swing.GroupLayout(forgePanel);
+        forgePanel.setLayout(forgePanelLayout);
+        forgePanelLayout.setHorizontalGroup(
+            forgePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(forgePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(forgeIconLabel)
+                .addContainerGap(515, Short.MAX_VALUE))
+        );
+        forgePanelLayout.setVerticalGroup(
+            forgePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(forgePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(forgeIconLabel)
+                .addContainerGap())
+        );
+
+        controlPanel.add(forgePanel, "update");
+
         getContentPane().add(controlPanel, java.awt.BorderLayout.SOUTH);
 
         setSize(new java.awt.Dimension(806, 538));
@@ -616,6 +642,8 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private javax.swing.JPanel controlPanel;
     private javax.swing.JLabel errorIconLabel;
     private javax.swing.JPanel errorPanel;
+    private javax.swing.JLabel forgeIconLabel;
+    private javax.swing.JPanel forgePanel;
     private javax.swing.JButton gamePathButton;
     private javax.swing.JCheckBox gamePathCheckBox;
     private javax.swing.JLabel gamePathLabel;
@@ -655,6 +683,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                     newsUrl = new URI(resourceBundle.getString("news_url")).toURL();
                     checkUpdateUrl = new URI(resourceBundle.getString("update_url")).toURL();
                     filesUpdateUrl = new URI(resourceBundle.getString("update_files_url")).toURL();
+                    forgeUpdateUrl = new URI(resourceBundle.getString("update_forge_url")).toURL();
                     appDownloadUrl = new URI(resourceBundle.getString("download_laucher_url")).toURL();
                     websiteUrl = new URI(resourceBundle.getString("website_url")).toURL();
                     updateDownloadUrl = new URI(resourceBundle.getString("update_download_url")).toURL();
