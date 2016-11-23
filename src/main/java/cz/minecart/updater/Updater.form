@@ -221,7 +221,9 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="profilePathLabel">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Cesta k Minecraft profilu (minecart.cz)"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                          <Connection code="&quot;Cesta k Minecraft profilu (&quot; + profileName + &quot;)&quot;" type="code"/>
+                        </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="profilePathCheckBox">

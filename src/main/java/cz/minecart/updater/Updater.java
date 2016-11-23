@@ -65,6 +65,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     private URL filesUpdateUrl;
     private URL forgeUpdateUrl;
     private URL updateDownloadUrl;
+    private String profileName;
 
     private VersionNumbers updateVersion;
     private Set<String> currentFiles = null;
@@ -237,7 +238,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             }
         });
 
-        profilePathLabel.setText("Cesta k Minecraft profilu (minecart.cz)");
+        profilePathLabel.setText("Cesta k Minecraft profilu (" + profileName + ")");
 
         profilePathCheckBox.setSelected(true);
         profilePathCheckBox.setText("Detekovat cestu automaticky");
@@ -687,6 +688,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                     appDownloadUrl = new URI(resourceBundle.getString("download_laucher_url")).toURL();
                     websiteUrl = new URI(resourceBundle.getString("website_url")).toURL();
                     updateDownloadUrl = new URI(resourceBundle.getString("update_download_url")).toURL();
+                    profileName = resourceBundle.getString("profileName");
                     banner.setVersion("Verze aktualizátoru: " + resourceBundle.getString("Application.version"));
                 } catch (URISyntaxException | MalformedURLException ex) {
                     Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
@@ -744,7 +746,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                             }
                             case NO_TARGET_DIRECTORY: {
                                 playIconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png")));
-                                playIconLabel.setText("Nepodařilo se najít složku Minecraft profilu");
                                 checkingEnded();
                                 break;
                             }
@@ -865,14 +866,16 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             Set<String> deleteMods = new HashSet<>();
             currentFiles = getModRecords();
 
-            String profilePath = getProfilePath();
+            ProfilePathResult profilePathResult = getProfilePath();
+            String profilePath = profilePathResult.profilePath;
             if (profilePath == null) {
+                playIconLabel.setText(profilePathResult.errorMessage);
                 return new UpdatePlan(CheckUpdatesResult.NO_TARGET_DIRECTORY);
             }
 
             String profileModsDir = profilePath + File.separator + "mods";
-            System.out.println("ModsDir: " + profileModsDir);
             if (!new File(profileModsDir).exists()) {
+                playIconLabel.setText("Nepodařilo se najít složku Minecraft profilu");
                 return new UpdatePlan(CheckUpdatesResult.NO_TARGET_DIRECTORY);
             }
 
@@ -893,7 +896,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             }
 
             if (!downloadMods.isEmpty() || !deleteMods.isEmpty()) {
-                return new UpdatePlan(CheckUpdatesResult.UPDATE_FOUND, downloadMods, deleteMods);
+                return new UpdatePlan(CheckUpdatesResult.UPDATE_FOUND, profilePath, downloadMods, deleteMods);
             }
 
             return new UpdatePlan(CheckUpdatesResult.NO_UPDATE_AVAILABLE);
@@ -905,7 +908,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
     }
 
     private ModsUpdateResult performModsUpdate(UpdatePlan updatePlan) {
-        String profilePath = getProfilePath();
+        String profilePath = updatePlan.profilePath;
         String profileModsDir = profilePath + File.separator + "mods";
         int downloadModsSize = updatePlan.downloadMods.size();
         if (downloadModsSize > 0) {
@@ -1047,21 +1050,35 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         return null;
     }
 
-    private String getProfilePath() {
+    private ProfilePathResult getProfilePath() {
         String profilePath = null;
         if (profilePathCheckBox.isSelected()) {
             JSONParser parser = new JSONParser();
             String gamePath = getDefaultGamePath();
             File profilesFile = new File(gamePath + File.separator + "launcher_profiles.json");
             if (!profilesFile.exists()) {
-                return null;
+                return new ProfilePathResult(null, "Nepodařilo se najít soubor s profily");
             }
 
             try {
                 FileReader fileReader = new FileReader(profilesFile);
                 JSONObject profileFile = (JSONObject) parser.parse(fileReader);
                 JSONObject profiles = (JSONObject) profileFile.get("profiles");
-                JSONObject minecartProfile = (JSONObject) profiles.get("minecart.cz");
+                JSONObject minecartProfile = null;
+                minecartProfile = (JSONObject) profiles.get(profileName);
+                if (minecartProfile == null) {
+                    // Scan for alternative names
+                    Set keySet = profiles.keySet();
+                    for (Object key : keySet) {
+                        if (key instanceof String && ((String) key).equalsIgnoreCase(profileName)) {
+                            minecartProfile = (JSONObject) profiles.get(key);
+                            break;
+                        }
+                    }
+                }
+                if (minecartProfile == null) {
+                    return new ProfilePathResult(null, "Nepodařilo se najít profil " + profileName);
+                }
                 String minecartProfileDir = (String) minecartProfile.get("gameDir");
                 if (minecartProfileDir == null || minecartProfileDir.isEmpty()) {
                     profilePath = gamePath;
@@ -1070,6 +1087,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 }
             } catch (ParseException | FileNotFoundException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
+
             } catch (IOException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -1077,7 +1095,18 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             profilePath = profilePathTextField.getText();
         }
 
-        return profilePath;
+        return new ProfilePathResult(profilePath, null);
+    }
+
+    private static class ProfilePathResult {
+
+        public ProfilePathResult(String profilePath, String errorMessage) {
+            this.profilePath = profilePath;
+            this.errorMessage = errorMessage;
+        }
+
+        String profilePath;
+        String errorMessage;
     }
 
     private void updateGamePathVisibility() {
@@ -1092,6 +1121,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
     private static class UpdatePlan {
 
+        String profilePath;
         CheckUpdatesResult resultType;
         Set<String> downloadMods;
         Set<String> deleteMods;
@@ -1100,8 +1130,9 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             this.resultType = resultType;
         }
 
-        public UpdatePlan(CheckUpdatesResult resultType, Set<String> downloadMods, Set<String> deleteMods) {
+        public UpdatePlan(CheckUpdatesResult resultType, String profilePath, Set<String> downloadMods, Set<String> deleteMods) {
             this.resultType = resultType;
+            this.profilePath = profilePath;
             this.downloadMods = downloadMods;
             this.deleteMods = deleteMods;
         }
