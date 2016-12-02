@@ -899,7 +899,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
             String news = result.toString("UTF-8");
             newsTextPane.setText(news);
-            Logger.getLogger(Updater.class.getName()).log(Level.INFO, "Načteny novinky");
+            Logger.getLogger(Updater.class.getName()).log(Level.INFO, "Novinky načteny");
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -961,8 +961,10 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             }
 
             // Compare list of mods
+            Set<String> installedMods = new HashSet<>();
             Set<String> downloadMods = new HashSet<>();
             Set<String> deleteMods = new HashSet<>();
+            Set<String> remoteMods = new HashSet<>();
             currentFiles = getModRecords();
 
             ProfilePathResult profilePathResult = getProfilePath();
@@ -976,10 +978,16 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
                 return new UpdatePlan(CheckModsUpdateResult.NO_TARGET_MOD_DIRECTORY, null);
             }
 
+            // List installed mods
+            File modsDirectory = new File(profileModsDir);
+            for (File modFile : modsDirectory.listFiles()) {
+                installedMods.add(modFile.getName().toLowerCase());
+            }
+            
             // Add missing mods to download list
             for (String mod : modsFiles) {
-                File targetFile = new File(profileModsDir + File.separator + mod);
-                if (!targetFile.exists()) {
+                remoteMods.add(mod.toLowerCase());
+                if (!installedMods.contains(mod.toLowerCase())) {
                     downloadMods.add(mod);
                 }
             }
@@ -987,7 +995,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             // Add mods which are no longer needed to delete list
             for (String mod : currentFiles) {
                 File targetFile = new File(profileModsDir + File.separator + mod);
-                if (targetFile.exists() && !modsFiles.contains(mod)) {
+                if (targetFile.exists() && !remoteMods.contains(mod.toLowerCase())) {
                     deleteMods.add(mod);
                 }
             }

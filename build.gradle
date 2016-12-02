@@ -1,16 +1,20 @@
-version = '0.1.1-SNAPSHOT'
+version = '0.1.2-SNAPSHOT'
 
 buildscript {
     repositories {
         mavenLocal()
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath("at.bxm.gradleplugins:gradle-svntools-plugin:latest.integration")
+        classpath "gradle.plugin.edu.sc.seis.gradle:launch4j:1.6.2"
     }
 }
 
-['java', 'distribution'].each {
+['java', 'distribution', 'edu.sc.seis.launch4j'].each {
     apply plugin: it
 }
 
@@ -42,16 +46,6 @@ configurations {
 
 artifacts {
     tests testJar
-}
-
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-    }
-    dependencies {
-        classpath("at.bxm.gradleplugins:gradle-svntools-plugin:latest.integration")
-    }
 }
 
 if (!hasProperty('mainClass')) {
@@ -86,6 +80,12 @@ repositories {
 
 dependencies {
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+}
+
+launch4j {
+    outfile = "minecart-updater.exe"
+    icon = "../../images/icon.ico"
+    mainClassName = ext.mainClass
 }
 
 jar {
