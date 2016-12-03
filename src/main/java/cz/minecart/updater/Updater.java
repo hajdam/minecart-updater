@@ -1062,6 +1062,7 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
             index++;
             updateProgressBar.setValue((index * 100) / downloadModsSize);
             updateProgressBar.repaint();
+            currentFiles.add(mod);
         }
 
         // Delete all files not present in new mods list
@@ -1069,12 +1070,12 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         for (String mod : updatePlan.deleteMods) {
             File targetFile = new File(profileModsDir + File.separator + mod);
             if (targetFile.exists()) {
-                targetFile.delete();
+                if (targetFile.delete()) {
+                    currentFiles.remove(mod);
+                }
             }
         }
 
-        // Save list of files for next update
-        saveModRecords(modsFiles);
         Logger.getLogger(Updater.class.getName()).log(Level.INFO, "Aktualizace byla provedena");
         return ModsUpdateResult.UPDATE_OK;
     }
@@ -1105,15 +1106,6 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
         return files;
     }
 
-    public void saveModRecords(Set<String> mods) {
-        int index = 0;
-        for (String mod : mods) {
-            config.setProperty(MOD_RECORD_PREFIX + index, mod);
-            index++;
-        }
-        config.setProperty(MOD_RECORD_PREFIX + index, "");
-    }
-
     @Override
     public void dispose() {
         save();
@@ -1129,6 +1121,13 @@ public class Updater extends javax.swing.JFrame implements HyperlinkListener {
 
         config.setProperty(RUN_COMMAND_PROPERTY, runCommandTextField.getText());
         config.setProperty(RUN_COMMAND_AUTO_PROPERTY, Boolean.toString(runCommandCheckBox.isSelected()));
+
+        int index = 0;
+        for (String mod : currentFiles) {
+            config.setProperty(MOD_RECORD_PREFIX + index, mod);
+            index++;
+        }
+        config.setProperty(MOD_RECORD_PREFIX + index, "");
 
         FileOutputStream configOutput;
         try {
