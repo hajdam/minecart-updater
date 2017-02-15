@@ -1,4 +1,4 @@
-version = '0.1.2-SNAPSHOT'
+version = '0.2.0-SNAPSHOT'
 
 buildscript {
     repositories {
@@ -49,7 +49,7 @@ artifacts {
 }
 
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'cz.minecart.updater.Updater'
+    ext.mainClass = 'cz.minecart.updater.UpdaterFrame'
     ext.appArgs = '-dev'
 }
 
