@@ -49,7 +49,7 @@ artifacts {
 }
 
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'cz.minecart.updater.UpdaterFrame'
+    ext.mainClass = 'cz.minecart.updater.UpdaterApp'
     ext.appArgs = '-dev'
 }
 
