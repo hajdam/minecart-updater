@@ -20,6 +20,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,73,0,0,2,-1"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -65,8 +66,10 @@
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Novinky">
-                <Property name="tabTitle" type="java.lang.String" value="Novinky"/>
+              <JTabbedPaneConstraints tabName="News">
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="newsTab.title" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -78,7 +81,7 @@
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="newsTextPane.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="newsTextPane.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -87,8 +90,10 @@
         <Container class="javax.swing.JPanel" name="optionsPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Nastaven&#xed;">
-                <Property name="tabTitle" type="java.lang.String" value="Nastaven&#xed;"/>
+              <JTabbedPaneConstraints tabName="Options">
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="optionsTab.title" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -109,7 +114,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="runCommandLabel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="214" pref="554" max="32767" attributes="0"/>
+                                      <EmptySpace min="214" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -178,7 +183,7 @@
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="checkUpdateButton" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace pref="56" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -186,13 +191,17 @@
                   <SubComponents>
                     <Component class="javax.swing.JLabel" name="gamePathLabel">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Cesta k Minecraftu"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="gamePathLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="gamePathCheckBox">
                       <Properties>
                         <Property name="selected" type="boolean" value="true"/>
-                        <Property name="text" type="java.lang.String" value="V&#xfd;choz&#xed; cesta"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="gamePathCheckBox.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gamePathCheckBoxActionPerformed"/>
@@ -205,7 +214,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="gamePathButton">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Vybrat..."/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="gamePathButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                         <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
@@ -214,13 +225,17 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="profilePathLabel">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Cesta k Minecraft profilu"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="profilePathLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="profilePathCheckBox">
                       <Properties>
                         <Property name="selected" type="boolean" value="true"/>
-                        <Property name="text" type="java.lang.String" value="Detekovat cestu automaticky"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="profilePathCheckBox.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="profilePathCheckBoxActionPerformed"/>
@@ -233,7 +248,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="profilePathButton">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Vybrat..."/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="profilePathButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                         <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
@@ -242,7 +259,9 @@
                     </Component>
                     <Component class="javax.swing.JLabel" name="runCommandLabel">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="P&#x159;&#xed;kaz pro spu&#x161;t&#x11b;n&#xed; Minecraftu"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="runCommandLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </Properties>
                     </Component>
                     <Component class="javax.swing.JTextField" name="runCommandTextField">
@@ -252,7 +271,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="runCommandButton">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Vybrat..."/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="runCommandButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                       </Properties>
                       <Events>
                         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runCommandButtonActionPerformed"/>
@@ -260,7 +281,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="checkUpdateButton">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Vyhledat aktualizace"/>
+                        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                          <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="checkUpdateButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                        </Property>
                         <Property name="enabled" type="boolean" value="false"/>
                       </Properties>
                       <Events>
@@ -277,7 +300,9 @@
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Log">
-                <Property name="tabTitle" type="java.lang.String" value="Log"/>
+                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="logTab.title" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                </Property>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>
@@ -301,7 +326,9 @@
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="columns" type="int" value="20"/>
                     <Property name="rows" type="int" value="5"/>
-                    <Property name="text" type="java.lang.String" value="Aplika&#x10d;n&#xed; log:&#xa;"/>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="logTextArea.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                    </Property>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -332,7 +359,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="checkingIconLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="380" max="32767" attributes="0"/>
+                      <EmptySpace pref="364" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -356,7 +383,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/apps/internet-web-browser-7.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="checkingIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="checkingIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
@@ -376,7 +403,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="errorIconLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="447" max="32767" attributes="0"/>
+                      <EmptySpace pref="541" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -400,7 +427,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="errorIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="errorIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
@@ -420,7 +447,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="warningIconLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="489" max="32767" attributes="0"/>
+                      <EmptySpace pref="415" max="32767" attributes="0"/>
                       <Component id="warningCloseButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -446,7 +473,7 @@
                   <Font name="Dialog" size="24" style="1"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="warningCloseButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="warningCloseButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -462,7 +489,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-no.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="warningIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="warningIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -481,7 +508,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="playIconLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="415" max="32767" attributes="0"/>
+                      <EmptySpace pref="405" max="32767" attributes="0"/>
                       <Component id="playButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -507,7 +534,7 @@
                   <Font name="Dialog" size="24" style="1"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="playButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="playButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -523,7 +550,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/actions/dialog-ok-5.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="playIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="playIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -543,7 +570,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="updateIconLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="updateProgressBar" pref="445" max="32767" attributes="0"/>
+                      <Component id="updateProgressBar" pref="427" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -571,7 +598,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/actions/upgrade_misc.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="updateIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="updateIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -595,7 +622,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="newAppIconLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="134" max="32767" attributes="0"/>
+                      <EmptySpace pref="80" max="32767" attributes="0"/>
                       <Component id="newAppDownloadButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -621,7 +648,7 @@
                   <Font name="Dialog" size="24" style="1"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="newAppDownloadButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="newAppDownloadButton.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
               <Events>
@@ -637,7 +664,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/actions/update-product.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="newAppIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="newAppIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -656,7 +683,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="forgeIconLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="515" max="32767" attributes="0"/>
+                      <EmptySpace pref="453" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -680,7 +707,7 @@
                   <Image iconType="3" name="/cz/minecart/updater/resources/images/icons/png/48x48/actions/upgrade_misc.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterFrame.properties" key="forgeIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="cz/minecart/updater/resources/UpdaterPanel.properties" key="forgeIconLabel.text" replaceFormat="resourceBundle.getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>

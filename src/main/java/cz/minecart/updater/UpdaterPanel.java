@@ -41,7 +41,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
     private final ResourceBundle resourceBundle = ResourceBundle.getBundle("cz/minecart/updater/resources/UpdaterPanel");
 
     private AnimatedBanner banner;
-    private Updater updater = new Updater();
+    private final Updater updater = new Updater();
 
     public UpdaterPanel() {
         initComponents();
@@ -83,8 +83,8 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             @Override
             public void run() {
                 updater.loadServerConfiguration();
-                profilePathLabel.setText("Cesta k minecraft profilu (" + updater.getProfileName() + ")");
-                banner.setVersion("Verze aktualizátoru: " + updater.getApplicationVersion());
+                profilePathLabel.setText(resourceBundle.getString("profilePathLabel.textPrefix") + updater.getProfileName() + resourceBundle.getString("profilePathLabel.textPostfix"));
+                banner.setVersion(resourceBundle.getString("bannerApplicationVersion") + updater.getApplicationVersion());
 
                 // Load news content
                 Updater.LoadNewsResult newsContentResult = updater.loadNewsContent();
@@ -124,7 +124,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                                         break;
                                     }
                                     case UPDATE_OK: {
-                                        actionSucessful("Nastavení bylo aktualizováno.");
+                                        actionSucessful(resourceBundle.getString("updateSuccessful"));
                                         break;
                                     }
                                 }
@@ -137,19 +137,19 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                                 break;
                             }
                             case NO_UPDATE_AVAILABLE: {
-                                actionSucessful("Nastavení je aktuální");
+                                actionSucessful(resourceBundle.getString("updateNotNeeded"));
                                 break;
                             }
                             case NO_TARGET_DIRECTORY: {
-                                actionFailed(updatePlan.errorMessage == null ? "Složka minecraft profilu je neplatná. Nastavte ji ručně." : updatePlan.errorMessage);
+                                actionFailed(updatePlan.errorMessage == null ? resourceBundle.getString("updateErrorProfilePathInvalid") : updatePlan.errorMessage);
                                 break;
                             }
                             case NO_TARGET_MOD_DIRECTORY: {
-                                actionFailed("Nepodařilo se najít složku Minecraft profilu");
+                                actionFailed(resourceBundle.getString("updateErrorProfileNotFound"));
                                 break;
                             }
                             default: {
-                                actionFailed("Nepodařilo se zkontrolovat aktualizaci");
+                                actionFailed(resourceBundle.getString("updateErrorCheckFailed"));
                                 break;
                             }
                         }
@@ -158,7 +158,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                     }
 
                     default: {
-                        errorIconLabel.setText("Došlo k neznámé chybě");
+                        errorIconLabel.setText(resourceBundle.getString("updateErrorUnknown"));
                         ((CardLayout) controlPanel.getLayout()).show(controlPanel, "error");
                         break;
                     }
@@ -172,7 +172,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
     private void actionSucessful(String okMessage) {
         if (!runCommandTextField.getText().isEmpty()) {
-            playButton.setText("Hrát >>");
+            playButton.setText(resourceBundle.getString("playButton.playText"));
         }
         playIconLabel.setText(okMessage);
         ((CardLayout) controlPanel.getLayout()).show(controlPanel, "play");
@@ -180,7 +180,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
     private void actionFailed(String errorMessage) {
         if (!runCommandTextField.getText().isEmpty()) {
-            warningCloseButton.setText("Hrát >>");
+            warningCloseButton.setText(resourceBundle.getString("playButton.playText"));
         }
         warningIconLabel.setText(errorMessage);
         ((CardLayout) controlPanel.getLayout()).show(controlPanel, "warning");
@@ -308,14 +308,14 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
         newsTextPane.setText(resourceBundle.getString("newsTextPane.text")); // NOI18N
         newsScrollPane.setViewportView(newsTextPane);
 
-        tabbedPane.addTab("Novinky", newsScrollPane);
+        tabbedPane.addTab(resourceBundle.getString("newsTab.title"), newsScrollPane); // NOI18N
 
         optionsPanel.setLayout(new javax.swing.BoxLayout(optionsPanel, javax.swing.BoxLayout.LINE_AXIS));
 
-        gamePathLabel.setText("Cesta k Minecraftu");
+        gamePathLabel.setText(resourceBundle.getString("gamePathLabel.text")); // NOI18N
 
         gamePathCheckBox.setSelected(true);
-        gamePathCheckBox.setText("Výchozí cesta");
+        gamePathCheckBox.setText(resourceBundle.getString("gamePathCheckBox.text")); // NOI18N
         gamePathCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gamePathCheckBoxActionPerformed(evt);
@@ -324,7 +324,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
         gamePathTextField.setEnabled(false);
 
-        gamePathButton.setText("Vybrat...");
+        gamePathButton.setText(resourceBundle.getString("gamePathButton.text")); // NOI18N
         gamePathButton.setEnabled(false);
         gamePathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -332,10 +332,10 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             }
         });
 
-        profilePathLabel.setText("Cesta k Minecraft profilu");
+        profilePathLabel.setText(resourceBundle.getString("profilePathLabel.text")); // NOI18N
 
         profilePathCheckBox.setSelected(true);
-        profilePathCheckBox.setText("Detekovat cestu automaticky");
+        profilePathCheckBox.setText(resourceBundle.getString("profilePathCheckBox.text")); // NOI18N
         profilePathCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 profilePathCheckBoxActionPerformed(evt);
@@ -344,7 +344,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
         profilePathTextField.setEnabled(false);
 
-        profilePathButton.setText("Vybrat...");
+        profilePathButton.setText(resourceBundle.getString("profilePathButton.text")); // NOI18N
         profilePathButton.setEnabled(false);
         profilePathButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -352,18 +352,18 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             }
         });
 
-        runCommandLabel.setText("Příkaz pro spuštění Minecraftu");
+        runCommandLabel.setText(resourceBundle.getString("runCommandLabel.text")); // NOI18N
 
         runCommandTextField.setText("java -jar Minecart.jar");
 
-        runCommandButton.setText("Vybrat...");
+        runCommandButton.setText(resourceBundle.getString("runCommandButton.text")); // NOI18N
         runCommandButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runCommandButtonActionPerformed(evt);
             }
         });
 
-        checkUpdateButton.setText("Vyhledat aktualizace");
+        checkUpdateButton.setText(resourceBundle.getString("checkUpdateButton.text")); // NOI18N
         checkUpdateButton.setEnabled(false);
         checkUpdateButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -380,7 +380,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                 .addGroup(optionsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(optionsInnerPanelLayout.createSequentialGroup()
                         .addComponent(runCommandLabel)
-                        .addGap(214, 554, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(optionsInnerPanelLayout.createSequentialGroup()
                         .addGroup(optionsInnerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(optionsInnerPanelLayout.createSequentialGroup()
@@ -434,26 +434,26 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                     .addComponent(runCommandButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(checkUpdateButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         optionsScrollPane.setViewportView(optionsInnerPanel);
 
         optionsPanel.add(optionsScrollPane);
 
-        tabbedPane.addTab("Nastavení", optionsPanel);
+        tabbedPane.addTab(resourceBundle.getString("optionsTab.title"), optionsPanel); // NOI18N
 
         logPanel.setLayout(new java.awt.BorderLayout());
 
         logTextArea.setEditable(false);
         logTextArea.setColumns(20);
         logTextArea.setRows(5);
-        logTextArea.setText("Aplikační log:\n");
+        logTextArea.setText(resourceBundle.getString("logTextArea.text")); // NOI18N
         logScrollPane.setViewportView(logTextArea);
 
         logPanel.add(logScrollPane, java.awt.BorderLayout.CENTER);
 
-        tabbedPane.addTab("Log", logPanel);
+        tabbedPane.addTab(resourceBundle.getString("logTab.title"), logPanel); // NOI18N
 
         add(tabbedPane, java.awt.BorderLayout.CENTER);
 
@@ -471,7 +471,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             .addGroup(checkingPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(checkingIconLabel)
-                .addContainerGap(380, Short.MAX_VALUE))
+                .addContainerGap(364, Short.MAX_VALUE))
         );
         checkingPanelLayout.setVerticalGroup(
             checkingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -495,7 +495,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             .addGroup(errorPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(errorIconLabel)
-                .addContainerGap(447, Short.MAX_VALUE))
+                .addContainerGap(541, Short.MAX_VALUE))
         );
         errorPanelLayout.setVerticalGroup(
             errorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -526,7 +526,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, warningPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(warningIconLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 489, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 415, Short.MAX_VALUE)
                 .addComponent(warningCloseButton)
                 .addContainerGap())
         );
@@ -561,7 +561,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, playPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(playIconLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 415, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 405, Short.MAX_VALUE)
                 .addComponent(playButton)
                 .addContainerGap())
         );
@@ -591,7 +591,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                 .addContainerGap()
                 .addComponent(updateIconLabel)
                 .addGap(18, 18, 18)
-                .addComponent(updateProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
+                .addComponent(updateProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
                 .addContainerGap())
         );
         updatePanelLayout.setVerticalGroup(
@@ -625,7 +625,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, newAppPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(newAppIconLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 134, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 80, Short.MAX_VALUE)
                 .addComponent(newAppDownloadButton)
                 .addContainerGap())
         );
@@ -652,7 +652,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
             .addGroup(forgePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(forgeIconLabel)
-                .addContainerGap(515, Short.MAX_VALUE))
+                .addContainerGap(453, Short.MAX_VALUE))
         );
         forgePanelLayout.setVerticalGroup(
             forgePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -727,7 +727,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
             @Override
             public String getDescription() {
-                return "Spustitelné soubory (*.exe, *.jar)";
+                return resourceBundle.getString("fileChooser.executableFilesDescription");
             }
         });
         chooser.setAcceptAllFileFilterUsed(true);
@@ -739,7 +739,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
     private void checkUpdateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkUpdateButtonActionPerformed
         checkUpdateButton.setEnabled(false);
         ((CardLayout) controlPanel.getLayout()).show(controlPanel, "checking");
-        Logger.getLogger(UpdaterPanel.class.getName()).log(Level.INFO, "\nNové hledání aktualizací...");
+        Logger.getLogger(UpdaterPanel.class.getName()).log(Level.INFO, resourceBundle.getString("updateRecheck"));
         performUpdate();
     }//GEN-LAST:event_checkUpdateButtonActionPerformed
 
