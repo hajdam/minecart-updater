@@ -42,6 +42,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
     private AnimatedBanner banner;
     private final Updater updater = new Updater();
+    private static Logger mainLogger = Logger.getLogger(UpdaterPanel.class.getName());
 
     public UpdaterPanel() {
         initComponents();
@@ -50,6 +51,12 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
 
     private void init() {
         registerLogger();
+        updater.setLogListener(new Updater.LogListener() {
+            @Override
+            public void log(Level level, String message) {
+                UpdaterPanel.this.log(level, message);
+            }
+        });
         updater.init();
         newsTextPane.addHyperlinkListener(this);
 
@@ -212,7 +219,7 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
     }
 
     private void registerLogger() {
-        Logger.getLogger(UpdaterPanel.class.getName()).addHandler(new StreamHandler() {
+        mainLogger.addHandler(new StreamHandler() {
             @Override
             public void publish(LogRecord record) {
                 super.publish(record);
@@ -232,6 +239,13 @@ public class UpdaterPanel extends javax.swing.JPanel implements HyperlinkListene
                 }
             }
         });
+    }
+
+    private void log(Level level, String message) {
+        logTextArea.append("\n");
+        if (message != null) {
+            logTextArea.append(message);
+        }
     }
 
     /**

@@ -271,14 +271,14 @@ public class Updater {
                 if (minecartProfile == null) {
                     return new ProfilePathResult(null, updaterBundle.getString("profileNotFound") + profileName);
                 }
-                log(Level.WARNING, updaterBundle.getString("profileName") + profileName);
+                log(Level.INFO, updaterBundle.getString("profileName") + profileName);
                 String minecartProfileDir = (String) minecartProfile.get("gameDir");
                 if (minecartProfileDir == null || minecartProfileDir.isEmpty()) {
                     resultProfilePath = resultGamePath;
                 } else {
                     resultProfilePath = minecartProfileDir;
                 }
-                log(Level.WARNING, updaterBundle.getString("pathToProfile") + resultProfilePath);
+                log(Level.INFO, updaterBundle.getString("pathToProfile") + resultProfilePath);
             } catch (ParseException | FileNotFoundException ex) {
                 Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
@@ -470,6 +470,7 @@ public class Updater {
             configOutput = new FileOutputStream(configFile);
             config.store(configOutput, "Minecart Updater");
             configOutput.close();
+            log(Level.INFO, updaterBundle.getString("configurationSaved"));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Updater.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
