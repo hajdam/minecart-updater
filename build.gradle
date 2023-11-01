@@ -1,22 +1,10 @@
+plugins {
+    id 'java'
+    id 'distribution'
+    id 'edu.sc.seis.launch4j' version '2.5.4'
+}
+
 version = '0.2.0-SNAPSHOT'
-
-buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath("at.bxm.gradleplugins:gradle-svntools-plugin:latest.integration")
-        classpath "gradle.plugin.edu.sc.seis.gradle:launch4j:1.6.2"
-    }
-}
-
-['java', 'distribution', 'edu.sc.seis.launch4j'].each {
-    apply plugin: it
-}
 
 sourceCompatibility = '1.7'
 
@@ -24,28 +12,6 @@ sourceCompatibility = '1.7'
 
 tasks.withType(JavaCompile) {
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-    doFirst {
-        options.fork = true
-        options.bootClasspath = "${System.properties['java.home']}/lib/rt.jar"
-     	   options.bootClasspath += "$File.pathSeparator${System.properties['java.home']}/jre/lib/jsse.jar"
-    }
-}
-
-// Disable tests on build
-check.dependsOn.remove(test)
-
-task testJar(type: Jar, dependsOn: testClasses) {
-    classifier "tests"
-    baseName = "test-${project.archivesBaseName}"
-    from sourceSets.test.output
-}
-
-configurations {
-    tests
-}
-
-artifacts {
-    tests testJar
 }
 
 if (!hasProperty('mainClass')) {
@@ -79,17 +45,17 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 }
 
 launch4j {
     outfile = "minecart-updater.exe"
     icon = "../../images/icon.ico"
-    mainClassName = ext.mainClass
+    mainClassName = project.mainClass
 }
 
 jar {
-    from configurations.compile.findAll { it.name == 'json-simple-1.1.1.jar' }.collect { it.isDirectory() ? it : zipTree(it) }
+    from { configurations.runtimeClasspath.findAll { it.name == 'json-simple-1.1.1.jar' }.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes(
             'Main-Class': mainClass

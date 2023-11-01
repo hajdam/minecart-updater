@@ -459,11 +459,13 @@ public class Updater {
          * Saves lists of currently installed mods
          */
         int index = 0;
-        for (String mod : currentFiles) {
-            config.setProperty(MOD_RECORD_PREFIX + index, mod);
-            index++;
+        if (currentFiles != null) { 
+            for (String mod : currentFiles) {
+                config.setProperty(MOD_RECORD_PREFIX + index, mod);
+                index++;
+            }
+            config.setProperty(MOD_RECORD_PREFIX + index, "");
         }
-        config.setProperty(MOD_RECORD_PREFIX + index, "");
 
         FileOutputStream configOutput;
         try {
